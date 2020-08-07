@@ -1,0 +1,40 @@
+pipeline {
+   agent any
+
+    tools {
+       
+        dockerTool "docker"
+        
+    }
+
+    stages {
+        stage('VCS') {
+            steps {
+                git 'https://github.com/Pradipta234/hello-world-webapp-pradipta.git'
+            }
+        }
+    stage('Deploy') {
+            steps {
+                script {
+                    withDockerRegistry(
+                        credentialsId: '6782cbbb-11ec-9240-1259-5cfa80891c64',
+                        toolName: 'docker') {
+                        
+                    
+                        def echoServerImage = docker.build("pradipta1778/python-jenkins:latest");
+                        echoServerImage.push();
+                    }
+                }
+            }
+        }    
+    }
+    post {
+    
+        success {
+            echo "Success"
+        }
+        failure {
+            echo "Failure"
+        }
+    }
+}
